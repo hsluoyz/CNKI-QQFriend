@@ -191,20 +191,51 @@ def getDocumentName(message_text):
     print "document title = " + title
     return title
 
-if __name__ == '__main__':
+# Paste the file.
+def QQ_PasteFile():
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0);
+    win32api.keybd_event(ord('V'), 0, 0, 0);
+    win32api.keybd_event(ord('V'), 0, win32con.KEYEVENTF_KEYUP, 0);
+    win32api.keybd_event(win32con.VK_CONTROL, 0, win32con.KEYEVENTF_KEYUP, 0);
+
+def QQ_SendOffline():
+    QQ_Enter()
+    time.sleep(0.2)
+    for i in range(0, 11):
+        print "tab = " + str(i)
+        win32api.keybd_event(win32con.VK_TAB, 0, 0, 0);
+        win32api.keybd_event(win32con.VK_TAB, 0, win32con.KEYEVENTF_KEYUP, 0);
+        time.sleep(0.2)
+    QQ_Enter()
+
+def do_get_document_name():
     if QQ_OpenActiveWindow():
         time.sleep(1.0)
         QQ_ToggleMessageRecord()
         time.sleep(1.0)
         QQ_CopyText()
         time.sleep(0.5)
-        # QQ_CloseWindow()
 
         message_text = QQ_GetMessageRecordText()
         QQ_ToggleMessageRecord()
-        getDocumentName(message_text)
+        return getDocumentName(message_text)
+    else:
+        return ""
+
+def do_send_document():
+    if QQ_OpenActiveWindow():
+        time.sleep(1.0)
+        QQ_PasteFile()
+        QQ_SendOffline()
+    else:
+        print "do_send_document() error, not sending document!"
+
+if __name__ == '__main__':
+    # do_get_document_name()
 
     # message_text = u"OSVT助理小O 12:26:54 AM\n中德两国高中生数学能力的分析及比较\n\n"
     # getDocumentName(message_text)
+
+    do_send_document()
 
     ## QQ_SendTextWithAt(u'大家好，我是@ly，请多指教！')
