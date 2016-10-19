@@ -3,6 +3,7 @@
 from subprocess import Popen, PIPE
 import re
 import os
+import sys
 
 def get_filename(line):
     # line = "Download success (J:\\github_repos\\CNKI-QQFriend\\seek201512039.pdf) "
@@ -76,5 +77,30 @@ def do_download(document_name):
     os.rename(old_filename, new_filename.decode("utf-8"))
 
 
-#do_download("中德两国高中生数学能力的分析及比较")
-do_download("德国职前教师教育质量保障体系改革新举措——基于莱比锡大学的分析")
+def fileDir():
+    path = sys.path[0]
+    print(path)
+    if os.path.isdir(path):
+        return path
+    elif os.path.isfile(path):
+        return os.path.dirname(path)
+
+def suffix(file, *suffixName):
+    array = map(file.endswith, suffixName)
+    if True in array:
+        return True
+    else:
+        return False
+
+def do_delete():
+    targetDir = fileDir()
+    for file in os.listdir(targetDir):
+        targetFile = os.path.join(targetDir, file)
+        if suffix(file, '.pdf', '.caj'):
+            print "removed file = " + file.decode("gbk")
+            os.remove(targetFile)
+
+if __name__ == '__main__':
+    do_delete()
+    do_download("中德两国高中生数学能力的分析及比较")
+    # do_download("德国职前教师教育质量保障体系改革新举措——基于莱比锡大学的分析")
