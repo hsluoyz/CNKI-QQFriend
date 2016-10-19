@@ -70,11 +70,16 @@ def download_document(document_name):
     print "**********************************************"
     print "End\n"
 
+    p.close()
+
 def do_download(document_name):
     old_filename = download_document(document_name)
     # old_filename = "seek201512039.pdf"
     new_filename = get_new_filename(old_filename, document_name)
     os.rename(old_filename, new_filename.decode("utf-8"))
+
+    # Close the subprocess if it still exists.
+    os.system('taskkill /f /im cnki-downloader.exe')
 
 
 def fileDir():
