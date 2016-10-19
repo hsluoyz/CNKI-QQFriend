@@ -1,4 +1,4 @@
-# coding=utf-8
+# coding=gbk
 
 from subprocess import Popen, PIPE
 import re
@@ -16,11 +16,11 @@ def get_filename(line):
 
 def get_new_filename(old_file_name, new_document_name):
     # old_file_name = "seek201512039.pdf"
-    print "old_file_name = " + old_file_name
+    print "old_file_name = " + old_file_name.decode('gbk')
     pattern_filename = ".*(\.[^\.]*)$"
     regex_filename = re.compile(pattern_filename)
     new_file_name = regex_filename.sub(new_document_name + "\\1", old_file_name)
-    print "new_file_name = " + new_file_name
+    print "new_file_name = " + new_file_name.decode('gbk')
     return new_file_name
 
 def get_output(p, line_no):
@@ -37,7 +37,7 @@ def download_document(document_name):
 
     print "**********************************************"
     get_output(p, 13)
-    input_command(p, document_name)
+    input_command(p, document_name.decode('gbk').encode('utf-8'))
 
     print "**********************************************"
     get_output(p, 5)
@@ -73,10 +73,12 @@ def download_document(document_name):
     p.close()
 
 def do_download(document_name):
+    do_delete()
+
     old_filename = download_document(document_name)
     # old_filename = "seek201512039.pdf"
     new_filename = get_new_filename(old_filename, document_name)
-    os.rename(old_filename, new_filename.decode("utf-8"))
+    os.rename(old_filename, new_filename.decode("gbk"))
 
     # Close the subprocess if it still exists.
     os.system('taskkill /f /im cnki-downloader.exe')
@@ -106,6 +108,5 @@ def do_delete():
             os.remove(targetFile)
 
 if __name__ == '__main__':
-    do_delete()
-    do_download("ä¸­å¾·ä¸¤å›½é«˜ä¸­ç”Ÿæ•°å­¦èƒ½åŠ›çš„åˆ†æåŠæ¯”è¾ƒ")
-    # do_download("å¾·å›½èŒå‰æ•™å¸ˆæ•™è‚²è´¨é‡ä¿éšœä½“ç³»æ”¹é©æ–°ä¸¾æªâ€”â€”åŸºäºè±æ¯”é”¡å¤§å­¦çš„åˆ†æ")
+    do_download("ÖĞµÂÁ½¹ú¸ßÖĞÉúÊıÑ§ÄÜÁ¦µÄ·ÖÎö¼°±È½Ï")
+    # do_download("µÂ¹úÖ°Ç°½ÌÊ¦½ÌÓıÖÊÁ¿±£ÕÏÌåÏµ¸Ä¸ïĞÂ¾Ù´ë¡ª¡ª»ùÓÚÀ³±ÈÎı´óÑ§µÄ·ÖÎö")
