@@ -124,5 +124,87 @@ def QQ_SendTextWithAt(str):
     # win32gui.PostMessage(hwnd, win32con.WM_KEYUP, ord('V'), 0)
     # win32gui.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_CONTROL, 0)
 
+def QQ_OpenActiveWindow():
+    window_name = u'OSVT助理小O'
+    hwnd = win32gui.FindWindow(None, window_name)
+    if hwnd == 0:
+        return False
+    print "find window = " + window_name
+    win32gui.SetForegroundWindow(hwnd)
+    return True
+
+# Press the "Alt + H' key.
+def QQ_ToggleMessageRecord():
+    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0);
+    win32api.keybd_event(ord('H'), 0, 0, 0);
+    win32api.keybd_event(ord('H'), 0, win32con.KEYEVENTF_KEYUP, 0);
+    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0);
+
+# Copy the last message.
+def QQ_CopyText():
+    win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0);
+    win32api.keybd_event(ord('C'), 0, 0, 0);
+    win32api.keybd_event(ord('C'), 0, win32con.KEYEVENTF_KEYUP, 0);
+    win32api.keybd_event(win32con.VK_CONTROL, 0, win32con.KEYEVENTF_KEYUP, 0);
+
+# Close the window.
+def QQ_CloseWindow():
+    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0);
+    win32api.keybd_event(win32con.VK_F4, 0, 0, 0);
+    win32api.keybd_event(win32con.VK_F4, 0, win32con.KEYEVENTF_KEYUP, 0);
+    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0);
+
+# Get the clipboard into a str.
+def QQ_GetClipboardText():
+    win32clipboard.OpenClipboard()
+    try:
+        message_text = win32clipboard.GetClipboardData(win32con.CF_TEXT)
+    except Exception, e:
+        print "win32clipboard.GetClipboardData() failed"
+        print Exception, ": ", e
+        win32clipboard.CloseClipboard()
+        return ""
+    win32clipboard.EmptyClipboard()
+    win32clipboard.CloseClipboard()
+    return message_text
+
+def QQ_GetMessageRecordText():
+    try_time = 0
+    while True:
+        time.sleep(0.5)
+        message_text = QQ_GetClipboardText()
+        message_text = message_text.decode('gbk')
+        print('try_time = %d, message_text = %s' % (try_time, message_text))
+        if message_text != "":
+            break
+        elif try_time >= 10:
+            print ('QQ_GetClipboardText Error.')
+            return ""
+        else:
+            try_time += 1
+    return message_text
+
+def getDocumentName(message_text):
+    print "received message = \n" + message_text
+    tmp_list = message_text.split('\n')
+    title = tmp_list[1]
+    print "document title = " + title
+    return title
+
 if __name__ == '__main__':
-    QQ_SendTextWithAt(u'大家好，我是@ly，请多指教！')
+    if QQ_OpenActiveWindow():
+        time.sleep(1.0)
+        QQ_ToggleMessageRecord()
+        time.sleep(1.0)
+        QQ_CopyText()
+        time.sleep(0.5)
+        # QQ_CloseWindow()
+
+        message_text = QQ_GetMessageRecordText()
+        QQ_ToggleMessageRecord()
+        getDocumentName(message_text)
+
+    # message_text = u"OSVT助理小O 12:26:54 AM\n中德两国高中生数学能力的分析及比较\n\n"
+    # getDocumentName(message_text)
+
+    ## QQ_SendTextWithAt(u'大家好，我是@ly，请多指教！')
