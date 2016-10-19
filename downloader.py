@@ -2,16 +2,25 @@
 
 from subprocess import Popen, PIPE
 import re
-
+import os
 
 def get_filename(line):
     # line = "Download success (J:\\github_repos\\CNKI-QQFriend\\seek201512039.pdf) "
-    print "the line is: " + line
+    print "target line = " + line
     pattern_filename = "([^\\\\]*)\\)"
     regex_filename = re.compile(pattern_filename)
     res = regex_filename.findall(line)
-    print "the regex result is: " + str(res)
+    print "get_filename() regex result = " + str(res)
     return str(res[0])
+
+def get_new_filename(old_file_name, new_document_name):
+    # old_file_name = "seek201512039.pdf"
+    print "old_file_name = " + old_file_name
+    pattern_filename = ".*(\.[^\.]*)$"
+    regex_filename = re.compile(pattern_filename)
+    new_file_name = regex_filename.sub(new_document_name + "\\1", old_file_name)
+    print "new_file_name = " + new_file_name
+    return new_file_name
 
 def get_output(p, line_no):
     for i in range(0, line_no):
@@ -22,12 +31,12 @@ def input_command(p, str_input):
     p.stdin.flush()
     print "[Input]: " + str_input
 
-def download_document():
+def download_document(document_name):
     p = Popen(["cnki-downloader.exe"], stdin=PIPE, stdout=PIPE, bufsize=1)
 
     print "**********************************************"
     get_output(p, 13)
-    input_command(p, "中德两国高中生数学能力的分析及比较")
+    input_command(p, document_name)
 
     print "**********************************************"
     get_output(p, 5)
@@ -60,5 +69,12 @@ def download_document():
     print "**********************************************"
     print "End\n"
 
-print "file name: " + download_document()
+def do_download(document_name):
+    old_filename = download_document(document_name)
+    # old_filename = "seek201512039.pdf"
+    new_filename = get_new_filename(old_filename, document_name)
+    os.rename(old_filename, new_filename.decode("utf-8"))
 
+
+#do_download("中德两国高中生数学能力的分析及比较")
+do_download("德国职前教师教育质量保障体系改革新举措——基于莱比锡大学的分析")
