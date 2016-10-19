@@ -230,6 +230,9 @@ def do_send_document():
     else:
         print "do_send_document() error, not sending document!"
 
+def do_close_session():
+    QQ_CloseWindow()
+
 if __name__ == '__main__':
     # do_get_document_name()
 
