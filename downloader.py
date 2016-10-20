@@ -59,7 +59,11 @@ def download_document(document_name):
             break
 
     for try_time in range(0, 10, 1):
-        input_command(p, "get 1")
+        try:
+            input_command(p, "get 1")
+        except IOError, e:
+            print IOError, ": ", e
+            break
 
         print "**********************************************"
         for i in range(0, 6):
