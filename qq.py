@@ -171,7 +171,9 @@ def QQ_GetClipboardText():
 def QQ_GetMessageRecordText():
     try_time = 0
     while True:
+        QQ_CopyText()
         time.sleep(0.5)
+
         message_text = QQ_GetClipboardText()
         print('try_time = %d, message_text = %s' % (try_time, message_text.decode('gbk')))
         if message_text != "":
@@ -212,8 +214,6 @@ def do_get_document_name():
         time.sleep(1.0)
         QQ_ToggleMessageRecord()
         time.sleep(1.0)
-        QQ_CopyText()
-        time.sleep(0.5)
 
         message_text = QQ_GetMessageRecordText()
         QQ_ToggleMessageRecord()
