@@ -58,7 +58,7 @@ def download_document(document_name):
         if line.startswith("We got"):
             break
 
-    for try_time in range (0, 10, 1):
+    for try_time in range(0, 10, 1):
         input_command(p, "get 1")
 
         print "**********************************************"
@@ -79,6 +79,7 @@ def download_document(document_name):
                     # Close the subprocess if it still exists.
                     os.system('taskkill /f /im cnki-downloader.exe')
                     return "fail"
+                break
 
     print "**********************************************"
     print "No document found!\n"
