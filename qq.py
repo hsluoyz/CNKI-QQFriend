@@ -202,7 +202,7 @@ def QQ_PasteFile():
 def QQ_SendOffline():
     QQ_Enter()
     time.sleep(0.2)
-    for i in range(0, 11):
+    for i in range(0, 10):
         print "tab = " + str(i)
         win32api.keybd_event(win32con.VK_TAB, 0, 0, 0);
         win32api.keybd_event(win32con.VK_TAB, 0, win32con.KEYEVENTF_KEYUP, 0);
@@ -230,6 +230,7 @@ def do_send_document():
         print "do_send_document() error, not sending document!"
 
 def do_close_session():
+    print "close the current session."
     QQ_CloseWindow()
 
 if __name__ == '__main__':

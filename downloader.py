@@ -69,19 +69,36 @@ def download_document(document_name):
             # Close the subprocess if it still exists.
             os.system('taskkill /f /im cnki-downloader.exe')
             return get_filename(line)
+        elif line.startswith("Download failed"):
+            print "**********************************************"
+            print "Download document fails, end.\n"
+            # Close the subprocess if it still exists.
+            os.system('taskkill /f /im cnki-downloader.exe')
+            return "fail"
 
     print "**********************************************"
     print "No document found!\n"
     # Close the subprocess if it still exists.
     os.system('taskkill /f /im cnki-downloader.exe')
-    return ""
+    return "non-existent"
 
 def do_download(document_name):
     do_delete()
 
-    old_filename = download_document(document_name)
-    if old_filename == "":
-        print "do_download::download_document() fails"
+    # Try to download the document for several times.
+    for i in range(0, 5, 1):
+        print "do_download::download_document() is excuting, try_time = " + str(i)
+        old_filename = download_document(document_name)
+        if old_filename == "fail":
+            print "do_download::download_document() fails, download fails! (maybe try again)"
+        elif old_filename == "non-existent":
+            print "do_download::download_document() fails, document doesn't exist!"
+            return ""
+        else:
+            # download succeed
+            break
+    if old_filename == "fail":
+        print "do_download::download_document() fails, download fails 5 times, abort."
         return ""
 
     # old_filename = "seek201512039.pdf"
