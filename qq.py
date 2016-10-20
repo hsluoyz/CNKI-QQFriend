@@ -125,7 +125,7 @@ def QQ_SendTextWithAt(str):
     # win32gui.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_CONTROL, 0)
 
 def QQ_checkTargetWindow():
-    window_name = 'OSVT助理小O'
+    window_name = '客户0'
     hwnd = win32gui.FindWindow(None, window_name)
     if hwnd == 0:
         return 0
