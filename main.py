@@ -10,7 +10,13 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 def do_check_request():
     document_name = qq.do_get_document_name()
     if document_name == "":
-        # no window poped up
+        # no window poped up.
+        return
+
+    document_name = downloader.is_document_title(document_name)
+    if document_name == "":
+        # not a document request.
+        qq.do_close_session()
         return
 
     print "*********************************************"

@@ -5,6 +5,22 @@ import re
 import os
 import sys
 
+def is_document_title(text):
+    print "is_document_title(), target text = " + text.decode('gbk')
+    pattern_text = "x\s(.*)"
+    regex_text = re.compile(pattern_text)
+    res = regex_text.findall(text)
+
+    try:
+        title = str(res[0])
+    except IndexError, e:
+        print IndexError, ": ", e
+        print "is_document_title(), no x mark found. NOT a PDF request."
+        return ""
+
+    print "is_document_title() regex result = " + title.decode('gbk')
+    return title
+
 def get_filename(line):
     # line = "Download success (J:\\github_repos\\CNKI-QQFriend\\seek201512039.pdf) "
     print "target line = " + line
@@ -140,5 +156,7 @@ def do_delete():
             os.remove(targetFile)
 
 if __name__ == '__main__':
-    do_download("中德两国高中生数学能力的分析及比较")
+    # do_download("中德两国高中生数学能力的分析及比较")
     # do_download("德国职前教师教育质量保障体系改革新举措——基于莱比锡大学的分析")
+
+    is_document_title("x title")
