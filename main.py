@@ -4,6 +4,9 @@ import qq
 import downloader
 import copy_paste
 
+import time
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 def do_check_request():
     document_name = qq.do_get_document_name()
     if document_name == "":
@@ -22,5 +25,21 @@ def do_check_request():
     qq.do_send_document()
     qq.do_close_session()
 
+def do_check_request_dummy():
+    print "Test request"
+
 if __name__ == '__main__':
+    ISOTIMEFORMAT = '%Y-%m-%d %X'
+    print time.strftime(ISOTIMEFORMAT, time.localtime())
+
     do_check_request()
+
+    scheduler = BlockingScheduler()
+    scheduler.add_job(do_check_request, 'cron', second='*/3')
+
+    print('Press Ctrl+Break to exit')
+
+    try:
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        pass
