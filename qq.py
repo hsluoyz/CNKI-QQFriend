@@ -173,8 +173,7 @@ def QQ_GetMessageRecordText():
     while True:
         time.sleep(0.5)
         message_text = QQ_GetClipboardText()
-        message_text = message_text.decode('gbk')
-        print('try_time = %d, message_text = %s' % (try_time, message_text))
+        print('try_time = %d, message_text = %s' % (try_time, message_text.decode('gbk')))
         if message_text != "":
             break
         elif try_time >= 10:
@@ -185,10 +184,10 @@ def QQ_GetMessageRecordText():
     return message_text
 
 def getDocumentName(message_text):
-    print "received message = \n" + message_text
-    tmp_list = message_text.split('\n')
+    print "received message = \n" + message_text.decode('gbk')
+    tmp_list = message_text.split('\r\n')
     title = tmp_list[1]
-    print "document title = " + title
+    print "document title = " + title.decode('gbk')
     return title
 
 # Paste the file.
