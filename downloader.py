@@ -64,26 +64,31 @@ def download_document(document_name):
         line = p.stdout.readline()
         print line,
         if line.startswith("Download success"):
+            print "**********************************************"
+            print "Found document, end.\n"
+            # Close the subprocess if it still exists.
+            os.system('taskkill /f /im cnki-downloader.exe')
             return get_filename(line)
-    input_command(p, "1")
 
     print "**********************************************"
-    print "End\n"
-
-    p.close()
+    print "No document found!\n"
+    # Close the subprocess if it still exists.
+    os.system('taskkill /f /im cnki-downloader.exe')
+    return ""
 
 def do_download(document_name):
     do_delete()
 
     old_filename = download_document(document_name)
+    if old_filename == "":
+        print "do_download::download_document() fails"
+        return ""
+
     # old_filename = "seek201512039.pdf"
     new_filename = get_new_filename(old_filename, document_name)
     print "rename the document, old_filename = " + old_filename.decode('gbk') + ", new_filename = " + new_filename.decode('gbk')
     os.rename(old_filename, new_filename)
-
-    # Close the subprocess if it still exists.
-    os.system('taskkill /f /im cnki-downloader.exe')
-
+    return new_filename
 
 def fileDir():
     path = sys.path[0]
