@@ -57,24 +57,28 @@ def download_document(document_name):
         print line,
         if line.startswith("We got"):
             break
-    input_command(p, "get 1")
 
-    print "**********************************************"
-    for i in range(0, 6):
-        line = p.stdout.readline()
-        print line,
-        if line.startswith("Download success"):
-            print "**********************************************"
-            print "Found document, end.\n"
-            # Close the subprocess if it still exists.
-            os.system('taskkill /f /im cnki-downloader.exe')
-            return get_filename(line)
-        elif line.startswith("Download failed"):
-            print "**********************************************"
-            print "Download document fails, end.\n"
-            # Close the subprocess if it still exists.
-            os.system('taskkill /f /im cnki-downloader.exe')
-            return "fail"
+    for try_time in range (0, 10, 1):
+        input_command(p, "get 1")
+
+        print "**********************************************"
+        for i in range(0, 6):
+            line = p.stdout.readline()
+            print line,
+            if line.startswith("Download success"):
+                print "**********************************************"
+                print "Found document, end.\n"
+                # Close the subprocess if it still exists.
+                os.system('taskkill /f /im cnki-downloader.exe')
+                return get_filename(line)
+            elif line.startswith("Download failed Response : 400 Bad Request"):
+                print "**********************************************"
+                print "Download document fails: 400 Bad Request, try_time = " + str(try_time)
+                if try_time == 9:
+                    print "Download document fails, abort."
+                    # Close the subprocess if it still exists.
+                    os.system('taskkill /f /im cnki-downloader.exe')
+                    return "fail"
 
     print "**********************************************"
     print "No document found!\n"

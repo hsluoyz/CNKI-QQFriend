@@ -11,7 +11,7 @@ def do_check_request():
         return
 
     print "*********************************************"
-    print "new request = " + document_name
+    print "new request = " + document_name.decode('gbk')
     file_name = downloader.do_download(document_name)
     if file_name == "":
         print "do_check_request::downloader.do_download() fails, file_name = NULL"
