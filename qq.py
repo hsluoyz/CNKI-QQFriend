@@ -27,7 +27,8 @@ def QQ_setClipboardText(str):
 
 # Print plain text.
 def QQ_PrintText(str):
-    QQ_setClipboardText(str.encode('gbk'))
+    print "Send text = " + str.decode('gbk')
+    QQ_setClipboardText(str)
     win32api.keybd_event(win32con.VK_CONTROL, 0, 0, 0);
     win32api.keybd_event(ord('V'), 0, 0, 0);
     win32api.keybd_event(ord('V'), 0, win32con.KEYEVENTF_KEYUP, 0);

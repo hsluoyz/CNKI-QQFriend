@@ -24,6 +24,10 @@ def do_check_request():
     file_name = downloader.do_download(document_name)
     if file_name == "":
         print "do_check_request::downloader.do_download() fails, file_name = NULL"
+        qq.QQ_PrintText("No document found!")
+        time.sleep(0.5)
+        qq.QQ_Enter()
+        time.sleep(0.5)
         qq.do_close_session()
         return
 
