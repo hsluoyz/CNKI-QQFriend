@@ -124,12 +124,19 @@ def QQ_SendTextWithAt(str):
     # win32gui.PostMessage(hwnd, win32con.WM_KEYUP, ord('V'), 0)
     # win32gui.PostMessage(hwnd, win32con.WM_KEYUP, win32con.VK_CONTROL, 0)
 
-def QQ_OpenActiveWindow():
-    window_name = u'OSVT助理小O'
+def QQ_checkTargetWindow():
+    window_name = 'OSVT助理小O'
     hwnd = win32gui.FindWindow(None, window_name)
     if hwnd == 0:
+        return 0
+    else:
+        print "find window = " + window_name.decode('gbk')
+        return hwnd
+
+def QQ_OpenActiveWindow():
+    hwnd = QQ_checkTargetWindow()
+    if hwnd == 0:
         return False
-    print "find window = " + window_name
     win32gui.SetForegroundWindow(hwnd)
     return True
 
@@ -230,8 +237,27 @@ def do_send_document():
         print "do_send_document() error, not sending document!"
 
 def do_close_session():
-    print "close the current session."
-    QQ_CloseWindow()
+    hwnd = QQ_checkTargetWindow()
+    if hwnd == 0:
+        print "Window doesn't exist, no need to close session."
+        return
+    else:
+        print "move the window to front."
+        win32gui.SetForegroundWindow(hwnd)
+        time.sleep(1.0)
+
+    for try_time in range(0, 10, 1):
+        print "try to close the current session, try_time = " + str(try_time)
+        QQ_CloseWindow()
+        time.sleep(1.0)
+        if QQ_checkTargetWindow() != 0:
+            QQ_CloseWindow()
+            print "close fails, probably the file is still in transmission."
+            time.sleep(5.0)
+        else:
+            print "session closed."
+            return
+    print "can't close the current session, abort."
 
 if __name__ == '__main__':
     # do_get_document_name()
@@ -239,6 +265,8 @@ if __name__ == '__main__':
     # message_text = u"OSVT助理小O 12:26:54 AM\n中德两国高中生数学能力的分析及比较\n\n"
     # getDocumentName(message_text)
 
-    do_send_document()
+    # do_send_document()
+
+    do_close_session()
 
     ## QQ_SendTextWithAt(u'大家好，我是@ly，请多指教！')
