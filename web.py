@@ -2,6 +2,8 @@
 
 import splinter
 import time
+from selenium import webdriver
+import os
 
 
 def download_document(document_title):
@@ -35,7 +37,15 @@ def download_document(document_title):
 
 
 def download_from_niuniu(document_title, entrance_no):
-    browser = splinter.Browser('chrome')
+    options = webdriver.ChromeOptions()
+    prefs = {'download.default_directory': os.path.abspath('.') + '\output'}
+    options.add_experimental_option("prefs", prefs)
+    # options.add_argument("download.default_directory=C:/aaa")
+
+    # dc = options.to_capabilities()
+    # browser = splinter.Browser('chrome', desired_capabilities=dc)
+
+    browser = splinter.Browser('chrome', options=options)
     browser.visit('http://www.niuniulib.com/e/member/login/')
 
     input_box_username = browser.find_by_id('username')
@@ -114,6 +124,22 @@ def download_from_niuniu(document_title, entrance_no):
     print "download succeed, document_title = " + document_title.decode('gbk')
     browser.quit()
     return True
+
+    # download_url = pdf_link['href']
+    # print "download_url = " + download_url.decode('gbk')
+    # import requests
+    #
+    # cookies = {browser.cookies.all()[0]["name"]: browser.cookies.all()[0]["value"]}
+    # result = requests.get(download_url, cookies=cookies)
+    # print "download succeed, document_title = " + document_title.decode('gbk')
+    #
+    # pdf = open("C:/111.pdf", 'w')
+    # pdf.write(result.content)
+    # pdf.close()
+    # print "document generated, path = " + "C:/111.pdf"
+    #
+    # browser.quit()
+    # return True
 
 
 if __name__ == '__main__':
