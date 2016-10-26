@@ -154,6 +154,11 @@ def download_from_niuniu(document_title, entrance_no):
         # print selenium.common.exceptions.NoAlertPresentException, ": ", e
         print "No alert window, good! go on.."
 
+    if '对不起，您的下载请求不合法'.decode('gbk') in browser.html:
+        print "download failed, the download request is illegal. Abort."
+        browser.quit()
+        return ''
+
     document_file = is_document_downloaded()
     if document_file != '':
         print "download succeed, document_title = " + document_title.decode('gbk')
@@ -188,6 +193,10 @@ def do_delete():
 
 
 def is_document_downloaded():
+    if not os.path.exists(document_folder):
+        print "folder doesn't exist, the download should have failed, abort."
+        return ""
+
     try_time = 0
     while True:
         has_file = False
@@ -196,7 +205,7 @@ def is_document_downloaded():
             print "found file = " + file.decode('gbk')
             if file.endswith('.crdownload'):
                 print "download not complete yet, try_time = " + str(try_time)
-                if try_time < 10:
+                if try_time < 15:
                     print "wait for 5 seconds to try again.."
                     try_time += 1
                     time.sleep(5)
@@ -248,10 +257,17 @@ def test_alert():
     alert.accept()
 
 
+def test_check_string():
+    browser = splinter.Browser('chrome')
+    browser.visit('file:///C:/Users/Administrator/Desktop/docdownload.cnki.net.html')
+    if '对不起，您的下载请求不合法'.decode('gbk') in browser.html:
+        print "found"
+
+
 if __name__ == '__main__':
     # download_document('计算机')
     # download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
     # do_delete()
     # is_document_downloaded()
     do_download('中德两国高中生数学能力的分析及比较')
-    # test_alert()
+    # test_check_string()
