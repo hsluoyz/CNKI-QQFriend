@@ -102,7 +102,7 @@ def download_from_niuniu(document_title, entrance_no):
     try_time = 0
     while True:
         try:
-            print 'input the title: ' + document_title.decode('gbk')
+            print 'try to input the title: ' + document_title.decode('gbk')
             input_box = browser.find_by_id('txt_1_value1')
             input_box.fill(document_title.decode('gbk'))
             break
@@ -125,9 +125,9 @@ def download_from_niuniu(document_title, entrance_no):
 
     try_time = 0
     while True:
-        first_link = browser.find_by_xpath('//*[@id="ctl00"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/a')
         try:
             print 'try to click the first article..'
+            first_link = browser.find_by_xpath('//*[@id="ctl00"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/a')
             first_link.click()
             break
         except AttributeError, e:
@@ -139,7 +139,7 @@ def download_from_niuniu(document_title, entrance_no):
                 return ''
             else:
                 try_time += 1
-                browser.reload()
+                # browser.reload()
 
     # browser = splinter.Browser('chrome')
     # browser.visit('http://www.cnki.net/KCMS/detail/detail.aspx?QueryID=0&CurRec=1&recid=&filename=JXCY201401007&dbname=CJFD2014&dbcode=CJFQ&pr=&urlid=&yx=&v=MTYyODdTN0RoMVQzcVRyV00xRnJDVVJMeWVaK1JxRnk3bFZiclBMelhJZDdHNEg5WE1ybzlGWTRSOGVYMUx1eFk=')
@@ -170,6 +170,7 @@ def download_from_niuniu(document_title, entrance_no):
     time.sleep(5)
 
     try:
+        # alert = browser.driver.switch_to_alert()
         alert = browser.get_alert()
         print "alert text = " + alert.text
         if '²¢·¢Êý'.decode('gbk') in alert.text:
