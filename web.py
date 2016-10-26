@@ -241,16 +241,17 @@ def is_document_downloaded():
             print "found file = " + file.decode('gbk')
             if file.endswith('.crdownload'):
                 file_size = os.path.getsize(document_folder + '/' + file) / 1024
-                if previous_file_size != file_size:
+                if previous_file_size < file_size:
                     print "downloaded = %d KBytes.." % (file_size)
                     previous_file_size = file_size
-                    time.sleep(5)
+                    try_time = 0
+                    time.sleep(2)
                 else:
                     print "downloaded = %d KBytes, no progress, try_time = %d" % (file_size, try_time)
-                    if try_time < 15:
-                        print "wait for 5 seconds to try again.."
+                    if try_time < 20:
+                        print "wait for 2 seconds to try again.."
                         try_time += 1
-                        time.sleep(5)
+                        time.sleep(2)
                     else:
                         print "already tried 5 times, abort."
                         return ""
