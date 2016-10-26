@@ -99,6 +99,42 @@ def download_from_niuniu(document_title, entrance_no):
     # print 'sleep 5 seconds..'
     # time.sleep(5)
 
+    if entrance_no == 3:
+        try_time = 0
+        while True:
+            try:
+                print "try to log on again.."
+                logon_link = browser.find_by_xpath('//*[@id="maincolumn"]/div[1]/div[2]/table/tbody/tr/td/a[1]')
+                logon_link.click()
+                break
+            except AttributeError, e:
+                print AttributeError, ": ", e
+                print "download_from_niuniu::logon_link.click() failed, try_time = " + str(try_time)
+                if try_time > 5:
+                    print "download_from_niuniu::logon_link.click() failed, too many attempts, abort."
+                    browser.quit()
+                    return ''
+                else:
+                    try_time += 1
+                    time.sleep(3)
+
+        print 'input username..'
+        input_box_username = browser.find_by_id('username')
+        input_box_username.fill('6007544018')
+
+        print 'input password..'
+        input_box_password = browser.find_by_id('password')
+        input_box_password.fill('415344')
+
+        print 'click "Submit"'
+        search_btn = browser.find_by_name('Submit')
+        search_btn.click()
+
+        if '如果您的浏览器没有自动跳转，请点击这里'.decode('gbk') in browser.html:
+            print "found the success page, do the jump"
+            jump_link = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
+            jump_link.click()
+
     try_time = 0
     while True:
         try:
@@ -268,7 +304,7 @@ def is_document_downloaded():
 
 def do_download(document_name):
     # Try to download the document for several times.
-    entrances = [4, 7]
+    entrances = [4, 3, 7]
     for i in range(0, len(entrances)):
         print "do_download::download_from_niuniu() is excuting, entrance = " + str(entrances[i]) + ", try_time = " + str(i)
         do_delete()
@@ -324,7 +360,7 @@ def test_check_logon():
 
 ########################################################################################
 # No    Name                Owner               Feature                 Supported
-# 3:    推荐入口（一）     知网义务            需要登录两次                  No
+# 3:    推荐入口（一）     佛山市图书馆, gz0413  需要登录两次                Yes
 # 4:    推荐入口（三）     华东师范大学      类型全，容易并发数过多           Yes
 # 5:    推荐入口（二）     gz0225            类型全，需要验证码              No
 # 7:    推荐入口（四）     mfshw               没有订阅硕博士                Yes
@@ -334,7 +370,7 @@ def test_check_logon():
 if __name__ == '__main__':
     # download_document('计算机')
     do_delete()
-    download_from_niuniu('数学', 7)
+    download_from_niuniu('数学', 4)
     # do_delete()
     # is_document_downloaded()
     # do_download('中德两国高中生数学能力的分析及比较')
