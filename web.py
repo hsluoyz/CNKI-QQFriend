@@ -6,6 +6,8 @@ import selenium
 import os
 import shutil
 
+document_folder = os.path.abspath('.') + '\output'
+
 
 def download_document(document_title):
     browser = splinter.Browser('chrome')
@@ -39,7 +41,7 @@ def download_document(document_title):
 
 def download_from_niuniu(document_title, entrance_no):
     options = selenium.webdriver.ChromeOptions()
-    prefs = {'download.default_directory': os.path.abspath('.') + '\output'}
+    prefs = {'download.default_directory': document_folder}
     options.add_experimental_option("prefs", prefs)
     # options.add_argument('intl.charset_default=GBK')
     # options.add_argument('start-maximized')
@@ -115,7 +117,7 @@ def download_from_niuniu(document_title, entrance_no):
             if try_time > 3:
                 print "download_from_niuniu::first_link.click() failed, too many attempts, abort."
                 browser.quit()
-                return False
+                return ''
             else:
                 try_time += 1
                 browser.reload()
@@ -135,23 +137,27 @@ def download_from_niuniu(document_title, entrance_no):
         print AttributeError, ": ", e
         print "download_from_niuniu::pdf_link.click() failed."
         browser.quit()
-        return False
+        return ''
 
     try:
         alert = browser.get_alert()
-        if alert.text.contains("并发数已满".decode('gbk')):
+        print "alert text = " + alert.text
+        if alert.text.contains("并发数"):
             print "download failed, too many people are downloading documents. Abort."
+            alert.accept()
             browser.quit()
-            return False
+            return ''
     except selenium.common.exceptions.NoAlertPresentException, e:
         # print selenium.common.exceptions.NoAlertPresentException, ": ", e
         print "No alert window, good! go on.."
 
-    print 'sleep 5 seconds..'
-    time.sleep(5)
-    print "download succeed, document_title = " + document_title.decode('gbk')
+    document_file = is_document_downloaded()
+    if document_file != '':
+        print "download succeed, document_title = " + document_title.decode('gbk')
+    else:
+        print "download_from_niuniu failed, no file generated."
     browser.quit()
-    return True
+    return document_file
 
     # download_url = pdf_link['href']
     # print "download_url = " + download_url.decode('gbk')
@@ -171,10 +177,37 @@ def download_from_niuniu(document_title, entrance_no):
 
 
 def do_delete():
-    shutil.rmtree(os.path.abspath('.') + '\output')
+    shutil.rmtree(document_folder)
 
+
+def is_document_downloaded():
+    try_time = 0
+    while True:
+        has_file = False
+        for file in os.listdir(document_folder):
+            has_file = True
+            print "found file = " + file.decode('gbk')
+            if file.endswith('.crdownload'):
+                print "download not complete yet, try_time = " + str(try_time)
+                if try_time < 5:
+                    print "wait for 5 seconds to try again.."
+                    try_time += 1
+                    time.sleep(5)
+                else:
+                    print "already tried 5 times, abort."
+                    return ""
+            elif file.endswith('.pdf') or file.endswith('.caj'):
+                print "download complete."
+                return str(file)
+            else:
+                print "strange file found, filename = " + file.decode('gbk')
+                return ""
+        if not has_file:
+            print "download is not started, abort."
+            return ""
 
 if __name__ == '__main__':
     # download_document('计算机')
     download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
     # do_delete()
+    # is_document_downloaded()
