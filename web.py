@@ -203,20 +203,27 @@ def is_document_downloaded():
         return ""
 
     try_time = 0
+    previous_file_size = 0
     while True:
         has_file = False
         for file in os.listdir(document_folder):
             has_file = True
             print "found file = " + file.decode('gbk')
             if file.endswith('.crdownload'):
-                print "download not complete yet, try_time = " + str(try_time)
-                if try_time < 15:
-                    print "wait for 5 seconds to try again.."
-                    try_time += 1
+                file_size = os.path.getsize(document_folder + '/' + file) / 1024
+                if previous_file_size != file_size:
+                    print "downloaded = %d KBytes.." % (file_size)
+                    previous_file_size = file_size
                     time.sleep(5)
                 else:
-                    print "already tried 5 times, abort."
-                    return ""
+                    print "downloaded = %d KBytes, no progress, try_time = %d" % (file_size, try_time)
+                    if try_time < 15:
+                        print "wait for 5 seconds to try again.."
+                        try_time += 1
+                        time.sleep(5)
+                    else:
+                        print "already tried 5 times, abort."
+                        return ""
             elif file.endswith('.pdf') or file.endswith('.caj'):
                 print "download complete."
                 return str(file)
