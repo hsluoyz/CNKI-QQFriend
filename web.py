@@ -166,26 +166,33 @@ def download_from_niuniu(document_title, entrance_no):
         browser.quit()
         return ''
 
+    # if len(browser.driver.window_handles) >= 2:
+    #     print "there are %d windows, switch to the last one" % (len(browser.driver.window_handles))
+    #     download_window = browser.driver.window_handles[-1]
+    #     # browser.driver.close()
+    #     browser.driver.switch_to.window(download_window)
+
     print 'sleep 5 seconds..'
     time.sleep(5)
 
-    try:
-        # alert = browser.driver.switch_to_alert()
-        alert = browser.get_alert()
-        print "alert text = " + alert.text
-        if '并发数'.decode('gbk') in alert.text:
-            print "download failed, too many people are downloading documents. Abort."
-            alert.accept()
-            browser.quit()
-            return ''
-    except selenium.common.exceptions.NoAlertPresentException, e:
-        # print selenium.common.exceptions.NoAlertPresentException, ": ", e
-        print "No alert window, good! go on.."
-
-    if '对不起，您的下载请求不合法'.decode('gbk') in browser.html:
-        print "download failed, the download request is illegal. Abort."
-        browser.quit()
-        return ''
+    # try:
+    #     # browser.driver.switch_to_alert()
+    #     alert = browser.get_alert()
+    #     print "alert text:"
+    #     print alert.text
+    #     # if '并发数'.decode('gbk') in alert.text:
+    #     print "download failed, too many people are downloading documents. Abort."
+    #     alert.accept()
+    #     browser.quit()
+    #     return ''
+    # except selenium.common.exceptions.NoAlertPresentException, e:
+    #     print selenium.common.exceptions.NoAlertPresentException, ": ", e
+    #     print "No alert window, good! go on.."
+    #
+    # if '对不起，您的下载请求不合法'.decode('gbk') in browser.html:
+    #     print "download failed, the download request is illegal. Abort."
+    #     browser.quit()
+    #     return ''
 
     document_file = is_document_downloaded()
     if document_file != '':
@@ -285,11 +292,17 @@ def test_alert():
     search_btn.click()
 
     time.sleep(2)
-    alert = browser.get_alert()
-    print "alert text = " + alert.text
-    if '我敢保证'.decode('gbk') in alert.text:
-        print "download failed, too many people are downloading documents. Abort."
-    alert.accept()
+    try:
+        alert = browser.get_alert()
+        print "alert text = " + alert.text
+        if '我敢保证'.decode('gbk') in alert.text:
+            print "found."
+        else:
+            print "not found."
+        alert.accept()
+    except selenium.common.exceptions.NoAlertPresentException, e:
+        print selenium.common.exceptions.NoAlertPresentException, ": ", e
+        print "No alert window, good! go on.."
 
 
 def test_check_string():
@@ -314,5 +327,6 @@ if __name__ == '__main__':
     # do_delete()
     # is_document_downloaded()
     do_download('中德两国高中生数学能力的分析及比较')
+    # test_alert()
     # test_check_string()
     # test_check_logon()
