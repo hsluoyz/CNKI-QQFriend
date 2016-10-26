@@ -172,8 +172,8 @@ def download_from_niuniu(document_title, entrance_no):
     #     # browser.driver.close()
     #     browser.driver.switch_to.window(download_window)
 
-    print 'sleep 5 seconds..'
-    time.sleep(5)
+    print 'sleep 8 seconds..'
+    time.sleep(8)
 
     # try:
     #     # browser.driver.switch_to_alert()
@@ -268,7 +268,7 @@ def is_document_downloaded():
 
 def do_download(document_name):
     # Try to download the document for several times.
-    entrances = [7, 4]
+    entrances = [4, 7]
     for i in range(0, len(entrances)):
         print "do_download::download_from_niuniu() is excuting, entrance = " + str(entrances[i]) + ", try_time = " + str(i)
         do_delete()
@@ -280,7 +280,7 @@ def do_download(document_name):
             print "do_download::download_from_niuniu() succeeds!"
             break
     if filename == '':
-        print "do_download::download_from_niuniu() fails, download fails 3 times, abort."
+        print "do_download::download_from_niuniu() fails, download fails %d times, abort." % (len(entrances))
         return ""
 
     return filename
@@ -322,13 +322,22 @@ def test_check_logon():
         search_btn = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
         search_btn.click()
 
+########################################################################################
+# No    Name                Owner               Feature                 Supported
+# 3:    推荐入口（一）     知网义务            需要登录两次                  No
+# 4:    推荐入口（三）     华东师范大学      类型全，容易并发数过多           Yes
+# 5:    推荐入口（二）     gz0225            类型全，需要验证码              No
+# 7:    推荐入口（四）     mfshw               没有订阅硕博士                Yes
+# 15:   知网(华东师范)     华东师范大学      类型全，容易并发数过多           Yes
+
 
 if __name__ == '__main__':
     # download_document('计算机')
-    # download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
+    do_delete()
+    download_from_niuniu('数学', 7)
     # do_delete()
     # is_document_downloaded()
-    do_download('中德两国高中生数学能力的分析及比较')
+    # do_download('中德两国高中生数学能力的分析及比较')
     # test_alert()
     # test_check_string()
     # test_check_logon()
