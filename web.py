@@ -267,10 +267,11 @@ def is_document_downloaded():
 
 def do_download(document_name):
     # Try to download the document for several times.
-    for i in range(0, 3, 1):
-        print "do_download::download_from_niuniu() is excuting, try_time = " + str(i)
+    entrances = [7, 4]
+    for i in range(0, len(entrances)):
+        print "do_download::download_from_niuniu() is excuting, entrance = " + str(entrances[i]) + ", try_time = " + str(i)
         do_delete()
-        filename = download_from_niuniu(document_name, 4)
+        filename = download_from_niuniu(document_name, entrances[i])
         if filename == '':
             print "do_download::download_from_niuniu() fails, download fails! (maybe try again)"
         else:
