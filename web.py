@@ -99,9 +99,23 @@ def download_from_niuniu(document_title, entrance_no):
     print 'sleep 5 seconds..'
     time.sleep(5)
 
-    print 'input the title: ' + document_title.decode('gbk')
-    input_box = browser.find_by_id('txt_1_value1')
-    input_box.fill(document_title.decode('gbk'))
+    try_time = 0
+    while True:
+        try:
+            print 'input the title: ' + document_title.decode('gbk')
+            input_box = browser.find_by_id('txt_1_value1')
+            input_box.fill(document_title.decode('gbk'))
+            break
+        except AttributeError, e:
+            print AttributeError, ": ", e
+            print "download_from_niuniu::input_box.fill() failed, try_time = " + str(try_time)
+            if try_time > 5:
+                print "download_from_niuniu::input_box.fill() failed, too many attempts, abort."
+                browser.quit()
+                return ''
+            else:
+                try_time += 1
+                time.sleep(3)
 
     print 'click "Search"'
     search_btn = browser.find_by_id('btnSearch')
