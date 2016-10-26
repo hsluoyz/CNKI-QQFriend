@@ -136,11 +136,19 @@ def download_from_niuniu(document_title, entrance_no):
 
     pdf_link = browser.find_by_xpath('//*[@id="QK_nav"]/ul/li[2]/a')
     try:
-        print 'try to download the article..'
+        print 'try to download the article as PDF..'
         pdf_link.click()
     except AttributeError, e:
         print AttributeError, ": ", e
-        print "download_from_niuniu::pdf_link.click() failed."
+        print "download_from_niuniu::pdf_link.click() failed, maybe it's a CAJ file."
+
+    caj_link = browser.find_by_xpath('//*[@id="nav"]/ul/li[3]/a')
+    try:
+        print 'try to download the article as CAJ..'
+        caj_link.click()
+    except AttributeError, e:
+        print AttributeError, ": ", e
+        print "download_from_niuniu::caj_link.click() failed."
         browser.quit()
         return ''
 
