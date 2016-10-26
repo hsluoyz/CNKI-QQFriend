@@ -92,7 +92,7 @@ def download_from_niuniu(document_title, entrance_no):
     recommended_link = browser.find_by_xpath('//*[@id="maincolumn"]/div[2]/div[2]/span[' + str(entrance_no) + ']/a')
     recommended_link.click()
 
-    new_window = browser.driver.window_handles[1]
+    new_window = browser.driver.window_handles[-1]
     browser.driver.close()
     browser.driver.switch_to.window(new_window)
 
@@ -130,7 +130,7 @@ def download_from_niuniu(document_title, entrance_no):
     # browser = splinter.Browser('chrome')
     # browser.visit('http://www.cnki.net/KCMS/detail/detail.aspx?QueryID=0&CurRec=1&recid=&filename=JXCY201401007&dbname=CJFD2014&dbcode=CJFQ&pr=&urlid=&yx=&v=MTYyODdTN0RoMVQzcVRyV00xRnJDVVJMeWVaK1JxRnk3bFZiclBMelhJZDdHNEg5WE1ybzlGWTRSOGVYMUx1eFk=')
 
-    detail_window = browser.driver.window_handles[1]
+    detail_window = browser.driver.window_handles[-1]
     browser.driver.close()
     browser.driver.switch_to.window(detail_window)
 
