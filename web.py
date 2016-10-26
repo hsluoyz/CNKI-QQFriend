@@ -139,10 +139,13 @@ def download_from_niuniu(document_title, entrance_no):
         browser.quit()
         return ''
 
+    print 'sleep 5 seconds..'
+    time.sleep(5)
+
     try:
         alert = browser.get_alert()
         print "alert text = " + alert.text
-        if alert.text.contains("并发数"):
+        if '并发数'.decode('gbk') in alert.text:
             print "download failed, too many people are downloading documents. Abort."
             alert.accept()
             browser.quit()
@@ -177,7 +180,11 @@ def download_from_niuniu(document_title, entrance_no):
 
 
 def do_delete():
-    shutil.rmtree(document_folder)
+    if os.path.exists(document_folder):
+        print "delete folder = " + document_folder.decode('gbk')
+        shutil.rmtree(document_folder)
+    else:
+        print "folder doesn't exist, no need to delete, folder = " + document_folder.decode('gbk')
 
 
 def is_document_downloaded():
@@ -189,7 +196,7 @@ def is_document_downloaded():
             print "found file = " + file.decode('gbk')
             if file.endswith('.crdownload'):
                 print "download not complete yet, try_time = " + str(try_time)
-                if try_time < 5:
+                if try_time < 10:
                     print "wait for 5 seconds to try again.."
                     try_time += 1
                     time.sleep(5)
@@ -206,8 +213,45 @@ def is_document_downloaded():
             print "download is not started, abort."
             return ""
 
+
+def do_download(document_name):
+    # Try to download the document for several times.
+    for i in range(0, 3, 1):
+        print "do_download::download_from_niuniu() is excuting, try_time = " + str(i)
+        do_delete()
+        filename = download_from_niuniu(document_name, 4)
+        if filename == '':
+            print "do_download::download_from_niuniu() fails, download fails! (maybe try again)"
+        else:
+            # download succeed
+            print "do_download::download_from_niuniu() succeeds!"
+            break
+    if filename == '':
+        print "do_download::download_from_niuniu() fails, download fails 3 times, abort."
+        return ""
+
+    return filename
+
+
+def test_alert():
+    browser = splinter.Browser('chrome')
+    browser.visit('file:///C:/Users/Administrator/Desktop/pop.htm')
+
+    search_btn = browser.find_by_xpath('/html/body/p[7]/input')
+    search_btn.click()
+
+    time.sleep(2)
+    alert = browser.get_alert()
+    print "alert text = " + alert.text
+    if '我敢保证'.decode('gbk') in alert.text:
+        print "download failed, too many people are downloading documents. Abort."
+    alert.accept()
+
+
 if __name__ == '__main__':
     # download_document('计算机')
-    download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
+    # download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
     # do_delete()
     # is_document_downloaded()
+    do_download('中德两国高中生数学能力的分析及比较')
+    # test_alert()

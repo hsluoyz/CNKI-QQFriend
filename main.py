@@ -2,6 +2,7 @@
 
 import qq
 import downloader
+import web
 import copy_paste
 
 import time
@@ -21,7 +22,7 @@ def do_check_request():
 
     print "*********************************************"
     print "new request = " + document_name.decode('gbk')
-    file_name = downloader.do_download(document_name)
+    file_name = web.do_download(document_name)
     if file_name == "":
         print "do_check_request::downloader.do_download() fails, file_name = NULL"
         qq.QQ_PrintText("No document found!")
