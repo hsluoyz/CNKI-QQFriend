@@ -38,7 +38,7 @@ def clip_files(file_list):
         win32clipboard.CloseClipboard()
 
 def copy_file_to_clipboard(filename):
-    clip_files([os.path.abspath(filename)])
+    clip_files([os.path.abspath('output/' + filename)])
 
 if __name__ == '__main__':
     copy_file_to_clipboard("中德两国高中生数学能力的分析及比较.pdf")
