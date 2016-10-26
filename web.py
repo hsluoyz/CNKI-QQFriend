@@ -2,7 +2,7 @@
 
 import splinter
 import time
-from selenium import webdriver
+import selenium
 import os
 import shutil
 
@@ -38,10 +38,13 @@ def download_document(document_title):
 
 
 def download_from_niuniu(document_title, entrance_no):
-    options = webdriver.ChromeOptions()
+    options = selenium.webdriver.ChromeOptions()
     prefs = {'download.default_directory': os.path.abspath('.') + '\output'}
     options.add_experimental_option("prefs", prefs)
-    # options.add_argument("download.default_directory=C:/aaa")
+    # options.add_argument('intl.charset_default=GBK')
+    # options.add_argument('start-maximized')
+    options.add_argument('lang=zh-CN')
+    # options.add_argument('download.default_directory=' + os.path.abspath('.') + '\output')
 
     # dc = options.to_capabilities()
     # browser = splinter.Browser('chrome', desired_capabilities=dc)
@@ -133,6 +136,16 @@ def download_from_niuniu(document_title, entrance_no):
         print "download_from_niuniu::pdf_link.click() failed."
         browser.quit()
         return False
+
+    try:
+        alert = browser.get_alert()
+        if alert.text.contains("并发数已满".decode('gbk')):
+            print "download failed, too many people are downloading documents. Abort."
+            browser.quit()
+            return False
+    except selenium.common.exceptions.NoAlertPresentException, e:
+        # print selenium.common.exceptions.NoAlertPresentException, ": ", e
+        print "No alert window, good! go on.."
 
     print 'sleep 5 seconds..'
     time.sleep(5)
