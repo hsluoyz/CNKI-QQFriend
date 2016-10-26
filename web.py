@@ -70,8 +70,13 @@ def download_from_niuniu(document_title, entrance_no):
     search_btn.click()
 
     # browser.is_text_present('登录成功'.decode('gbk'), wait_time=10)
-    print 'sleep 5 seconds..'
-    time.sleep(5)
+    # print 'sleep 5 seconds..'
+    # time.sleep(5)
+
+    if '如果您的浏览器没有自动跳转，请点击这里'.decode('gbk') in browser.html:
+        print "found the success page, do the jump"
+        jump_link = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
+        jump_link.click()
 
     print 'go to the main page'
     mainpage_link = browser.find_by_xpath('/html/body/div[2]/div[2]/div[4]/a[1]')
@@ -264,6 +269,15 @@ def test_check_string():
         print "found"
 
 
+def test_check_logon():
+    browser = splinter.Browser('chrome')
+    browser.visit('file:///C:/Users/Administrator/Desktop/%E7%89%9B%E7%89%9B%E5%9B%BE%E4%B9%A6%E9%A6%86%E6%8F%90%E7%A4%BA.html')
+    if '如果您的浏览器没有自动跳转，请点击这里'.decode('gbk') in browser.html:
+        print "found"
+        search_btn = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
+        search_btn.click()
+
+
 if __name__ == '__main__':
     # download_document('计算机')
     # download_from_niuniu('中德两国高中生数学能力的分析及比较', 4)
@@ -271,3 +285,4 @@ if __name__ == '__main__':
     # is_document_downloaded()
     do_download('中德两国高中生数学能力的分析及比较')
     # test_check_string()
+    # test_check_logon()
