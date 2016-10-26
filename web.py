@@ -96,8 +96,8 @@ def download_from_niuniu(document_title, entrance_no):
     browser.driver.close()
     browser.driver.switch_to.window(new_window)
 
-    print 'sleep 5 seconds..'
-    time.sleep(5)
+    # print 'sleep 5 seconds..'
+    # time.sleep(5)
 
     try_time = 0
     while True:
