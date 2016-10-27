@@ -422,6 +422,7 @@ def test_captcha():
         jump_link.click()
 
     try_time = 0
+    try_time_max = 50
     while True:
         captcha.do_delete()
         os.mkdir(captcha_folder)
@@ -433,7 +434,7 @@ def test_captcha():
         captcha.preprocess('captcha.bmp', 'captcha_output.bmp')
         captcha_word = captcha.solve('captcha_output.bmp')
         if captcha_word == '':
-            if try_time < 30:
+            if try_time < try_time_max:
                 print "download_from_niuniu::captcha.solve() failed, try_time = " + str(try_time)
                 try_time += 1
 
@@ -450,14 +451,26 @@ def test_captcha():
 
         print 'input captcha..'
         input_box_captcha = browser.find_by_xpath('//*[@id="loginHtml"]/input[1]')
-        input_box_captcha.fill(captcha_word)
+        try:
+            input_box_captcha.fill(captcha_word)
+        except UnicodeDecodeError, e:
+            print UnicodeDecodeError, ": ", e
+            print "download_from_niuniu::input_box_captcha.fill() failed, try_time = " + str(try_time)
+            if try_time > try_time_max:
+                print "download_from_niuniu::input_box_captcha.fill() failed, too many attempts, abort."
+                browser.quit()
+                return ''
+            else:
+                try_time += 1
+                browser.reload()
+                continue
 
-        # print 'click "Submit"'
-        # submit_btn = browser.find_by_xpath('//*[@id="loginHtml"]/input[2]')
-        # submit_btn.click()
+        print 'click "Submit"'
+        submit_btn = browser.find_by_xpath('//*[@id="loginHtml"]/input[2]')
+        submit_btn.click()
 
         if '登录失败'.decode('gbk') in browser.html or '验证码不正确，不能登录'.decode('gbk') in browser.html:
-            if try_time < 30:
+            if try_time < try_time_max:
                 print "the captcha is wrong, can't log in, try_time = " + str(try_time)
                 try_time += 1
 
