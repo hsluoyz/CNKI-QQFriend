@@ -38,8 +38,10 @@ def solve(filename):
 
     fp = open(captcha_folder + 'result.txt', 'r')
     result = fp.read()
+    result = result.replace(' ', '')
+    result = result.rstrip('\n')
     if result != '':
-        print "OCR result = " + result
+        print "OCR result = <" + result + ">"
     else:
         print "OCR failed, result = <NULL>"
     return result
