@@ -136,6 +136,76 @@ def download_from_niuniu(document_title, entrance_no):
             print "found the success page, do the jump"
             jump_link = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
             jump_link.click()
+    elif entrance_no == 5:
+        try_time = 0
+        try_time_max = 50
+        while True:
+            captcha.do_delete()
+            os.mkdir(captcha_folder)
+            print "try to recognize the captcha.."
+            captcha_img = browser.find_by_xpath('//*[@id="regimg"]')
+            captcha_img = captcha_img[0]
+
+            get_captcha(browser.driver, captcha_img, captcha_folder)
+            captcha.preprocess('captcha.bmp', 'captcha_output.bmp')
+            captcha_word = captcha.solve('captcha_output.bmp')
+            if captcha_word == '':
+                if try_time < try_time_max:
+                    print "download_from_niuniu::captcha.solve() failed, try_time = " + str(try_time)
+                    try_time += 1
+
+                    print "refresh the captcha"
+                    # refresh_captcha_link = browser.find_by_xpath('//*[@id="loginHtml"]/a[1]')
+                    # '//*[@id="loginHtml"]/a[1]'
+                    # refresh_captcha_link.click()
+                    browser.reload()
+                    continue
+                else:
+                    print "download_from_niuniu::captcha.solve() failed, too many attempts, abort."
+                    browser.quit()
+                    return ''
+
+            print 'input captcha..'
+            input_box_captcha = browser.find_by_xpath('//*[@id="loginHtml"]/input[1]')
+            try:
+                input_box_captcha.fill(captcha_word)
+            except UnicodeDecodeError, e:
+                print UnicodeDecodeError, ": ", e
+                print "download_from_niuniu::input_box_captcha.fill() failed, try_time = " + str(try_time)
+                if try_time > try_time_max:
+                    print "download_from_niuniu::input_box_captcha.fill() failed, too many attempts, abort."
+                    browser.quit()
+                    return ''
+                else:
+                    try_time += 1
+                    browser.reload()
+                    continue
+
+            print 'click "Submit"'
+            submit_btn = browser.find_by_xpath('//*[@id="loginHtml"]/input[2]')
+            submit_btn.click()
+
+            if '登录失败'.decode('gbk') in browser.html or '验证码不正确，不能登录'.decode('gbk') in browser.html:
+                if try_time < try_time_max:
+                    print "the captcha is wrong, can't log in, try_time = " + str(try_time)
+                    try_time += 1
+
+                    back_btn = browser.find_by_xpath('/html/body/table[5]/tbody/tr/td[2]/table[3]/tbody/tr/td/input')
+                    back_btn.click()
+
+                    print "refresh the captcha"
+                    # refresh_captcha_link = browser.find_by_xpath('//*[@id="loginHtml"]/a[1]')
+                    # '//*[@id="loginHtml"]/a[1]'
+                    # refresh_captcha_link.click()
+                    browser.reload()
+                    continue
+                else:
+                    print "the captcha is wrong, can't log in, too many attempts, abort."
+                    browser.quit()
+                    return ''
+            else:
+                print 'the captcha passed.'
+                break
 
     try_time = 0
     while True:
@@ -306,7 +376,7 @@ def is_document_downloaded():
 
 def do_download(document_name):
     # Try to download the document for several times.
-    entrances = [4, 3, 7]
+    entrances = [5, 4, 3, 7]
     for i in range(0, len(entrances)):
         print "do_download::download_from_niuniu() is excuting, entrance = " + str(entrances[i]) + ", try_time = " + str(i)
         do_delete()
@@ -496,7 +566,7 @@ def test_captcha():
 # No    Name                Owner               Feature                 Supported
 # 3:    推荐入口（一）     佛山市图书馆, gz0413  需要登录两次                Yes
 # 4:    推荐入口（三）     华东师范大学      类型全，容易并发数过多           Yes
-# 5:    推荐入口（二）     gz0225            类型全，需要验证码              No
+# 5:    推荐入口（二）     gz0225            类型全，需要验证码              Yes
 # 7:    推荐入口（四）     mfshw               没有订阅硕博士                Yes
 # 15:   知网(华东师范)     华东师范大学      类型全，容易并发数过多           Yes
 
@@ -504,11 +574,11 @@ def test_captcha():
 if __name__ == '__main__':
     # download_document('计算机')
     # do_delete()
-    # download_from_niuniu('数学', 5)
+    download_from_niuniu('数学', 5)
     # do_delete()
     # is_document_downloaded()
     # do_download('中德两国高中生数学能力的分析及比较')
     # test_alert()
     # test_check_string()
     # test_check_logon()
-    test_captcha()
+    # test_captcha()
