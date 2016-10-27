@@ -5,8 +5,10 @@ import time
 import selenium
 import os
 import shutil
+import captcha
 
 document_folder = os.path.abspath('.') + '\output'
+captcha_folder = os.path.abspath('.') + '\\captcha\\'
 
 
 def download_document(document_title):
@@ -358,6 +360,125 @@ def test_check_logon():
         search_btn = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
         search_btn.click()
 
+
+def get_captcha(driver, element, folder):
+    from PIL import Image
+
+    # saves screenshot of entire page
+    driver.save_screenshot(folder + 'screenshot.bmp')
+    print "saved screenshot = " + folder + 'screenshot.bmp'
+    # time.sleep(3)
+
+    # uses PIL library to open image in memory
+    image = Image.open(folder + 'screenshot.bmp')
+
+    left = int(element['x'])
+    top = int(element['y'])
+    right = left + int(element['width'])
+    bottom = top + int(element['height'])
+    print 'image location & size = (%d, %d) -> (%d, %d)' % (left, top, right, bottom)
+    image = image.crop((left, top, right, bottom))  # defines crop points
+    image.save(folder + 'captcha.bmp', 'bmp')  # saves new cropped image
+    print "retrieved captcha = " + folder + 'captcha.bmp'
+
+
+def test_captcha():
+    browser = splinter.Browser('chrome')
+    browser.visit('http://www.niuniulib.com/e/action/ShowInfo.php?classid=1&id=953')
+
+    try_time = 0
+    while True:
+        try:
+            print "try to log on again.."
+            logon_link = browser.find_by_xpath('//*[@id="maincolumn"]/div[1]/div[2]/table/tbody/tr/td/a[1]')
+            logon_link.click()
+            break
+        except AttributeError, e:
+            print AttributeError, ": ", e
+            print "download_from_niuniu::logon_link.click() failed, try_time = " + str(try_time)
+            if try_time > 5:
+                print "download_from_niuniu::logon_link.click() failed, too many attempts, abort."
+                browser.quit()
+                return ''
+            else:
+                try_time += 1
+                time.sleep(3)
+
+    print 'input username..'
+    input_box_username = browser.find_by_id('username')
+    input_box_username.fill('6007544018')
+
+    print 'input password..'
+    input_box_password = browser.find_by_id('password')
+    input_box_password.fill('415344')
+
+    print 'click "Submit"'
+    search_btn = browser.find_by_name('Submit')
+    search_btn.click()
+
+    if '如果您的浏览器没有自动跳转，请点击这里'.decode('gbk') in browser.html:
+        print "found the success page, do the jump"
+        jump_link = browser.find_by_xpath('/html/body/table/tbody/tr[2]/td/div/a')
+        jump_link.click()
+
+    try_time = 0
+    while True:
+        captcha.do_delete()
+        os.mkdir(captcha_folder)
+        print "try to recognize the captcha.."
+        captcha_img = browser.find_by_xpath('//*[@id="regimg"]')
+        captcha_img = captcha_img[0]
+
+        get_captcha(browser.driver, captcha_img, captcha_folder)
+        captcha.preprocess('captcha.bmp', 'captcha_output.bmp')
+        captcha_word = captcha.solve('captcha_output.bmp')
+        if captcha_word == '':
+            if try_time < 30:
+                print "download_from_niuniu::captcha.solve() failed, try_time = " + str(try_time)
+                try_time += 1
+
+                print "refresh the captcha"
+                # refresh_captcha_link = browser.find_by_xpath('//*[@id="loginHtml"]/a[1]')
+                # '//*[@id="loginHtml"]/a[1]'
+                # refresh_captcha_link.click()
+                browser.reload()
+                continue
+            else:
+                print "download_from_niuniu::captcha.solve() failed, too many attempts, abort."
+                browser.quit()
+                return ''
+
+        print 'input captcha..'
+        input_box_captcha = browser.find_by_xpath('//*[@id="loginHtml"]/input[1]')
+        input_box_captcha.fill(captcha_word)
+
+        # print 'click "Submit"'
+        # submit_btn = browser.find_by_xpath('//*[@id="loginHtml"]/input[2]')
+        # submit_btn.click()
+
+        if '登录失败'.decode('gbk') in browser.html or '验证码不正确，不能登录'.decode('gbk') in browser.html:
+            if try_time < 30:
+                print "the captcha is wrong, can't log in, try_time = " + str(try_time)
+                try_time += 1
+
+                back_btn = browser.find_by_xpath('/html/body/table[5]/tbody/tr/td[2]/table[3]/tbody/tr/td/input')
+                back_btn.click()
+
+                print "refresh the captcha"
+                # refresh_captcha_link = browser.find_by_xpath('//*[@id="loginHtml"]/a[1]')
+                # '//*[@id="loginHtml"]/a[1]'
+                # refresh_captcha_link.click()
+                browser.reload()
+                continue
+            else:
+                print "the captcha is wrong, can't log in, too many attempts, abort."
+                browser.quit()
+                return ''
+        else:
+            print 'the captcha passed.'
+            break
+
+
 ########################################################################################
 # No    Name                Owner               Feature                 Supported
 # 3:    推荐入口（一）     佛山市图书馆, gz0413  需要登录两次                Yes
@@ -369,11 +490,12 @@ def test_check_logon():
 
 if __name__ == '__main__':
     # download_document('计算机')
-    do_delete()
-    download_from_niuniu('数学', 4)
+    # do_delete()
+    # download_from_niuniu('数学', 5)
     # do_delete()
     # is_document_downloaded()
     # do_download('中德两国高中生数学能力的分析及比较')
     # test_alert()
     # test_check_string()
     # test_check_logon()
+    test_captcha()
