@@ -38,7 +38,10 @@ def solve(filename):
 
     fp = open(captcha_folder + 'result.txt', 'r')
     result = fp.read()
-    print "OCR result = " + result
+    if result != '':
+        print "OCR result = " + result
+    else:
+        print "OCR failed, result = <NULL>"
     return result
 
 
@@ -47,10 +50,10 @@ def do_delete():
         print "delete folder = " + captcha_folder.decode('gbk')
         shutil.rmtree(captcha_folder)
     else:
-        print "folder doesn't exist, no need to delete, folder = " + document_folder.decode('gbk')
+        print "folder doesn't exist, no need to delete, folder = " + captcha_folder.decode('gbk')
 
 
 if __name__ == '__main__':
-    preprocess('verifycode.jpg', 'verifycode1.jpg')
-    solve('verifycode1.jpg')
+    preprocess('verifycode2.jpg', 'verifycode2_output.jpg')
+    solve('verifycode2_output.jpg')
     # do_delete()
